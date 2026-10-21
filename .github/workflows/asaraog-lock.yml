@@ -1,0 +1,21 @@
+name: asaraog-lock
+on:
+  workflow_dispatch:
+    inputs:
+      ref: {required: true, type: string}
+      package: {required: true, type: string}
+permissions:
+  contents: write
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: "${{ inputs.ref }}"}
+      - uses: astral-sh/setup-uv@v6
+      - run: uv lock --upgrade-package "${{ inputs.package }}"
+      - run: git diff --stat
+      - run: |
+          git config user.name "Apoorv Saraogee"
+          git config user.email "136734128+asaraog@users.noreply.github.com"
+          git commit -am "Update uv.lock for the nilearn floor" && git push origin HEAD:${{ inputs.ref }}
